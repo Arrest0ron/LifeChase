@@ -3,6 +3,6 @@
 
 int main() {
     VM::Matrix NewMatrix = VM::Matrix::identity(5)*3;
-    std::cout << (NewMatrix).determinant();
+    std::cout << (NewMatrix).inverse();
     return 0;
 }

@@ -224,7 +224,7 @@ namespace VM
         {
             for (int j=0; j != m.columns; j++)
             {
-                std::cout <<std::setw(6) << std::left << m.matrix[i][j];
+                std::cout <<std::setw(12) << std::left << m.matrix[i][j];
             }
             std::cout << "\n";
         }
@@ -437,6 +437,28 @@ namespace VM
         }
         
         return res;
+    }
+    Matrix Matrix::inverse(void) const
+    {
+        if (this->columns != this->rows)
+        {
+            throw std::runtime_error("Matrix must be square to calculate inverse\n");
+        }
+        // std::cout << (*this).determinant() << "\n\n";
+        
+        
+        Matrix NewMatrix(columns, columns);
+        int coef;
+        for (int i =0; i!= rows; i++)
+        {
+            for (int j = 0; j!=columns; j++)
+            {
+                if ((i+j)%2==0){coef=1;}
+                else {coef = -1;}
+                NewMatrix.matrix[i][j] = float(coef * this->submatrix(i,j).determinant());
+            }
+        }
+        return NewMatrix*(1/this->determinant());
     }
 
     Vector::Vector()

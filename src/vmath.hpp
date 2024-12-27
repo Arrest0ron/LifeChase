@@ -88,6 +88,7 @@ namespace VM
         Matrix transpose();
         Matrix submatrix(int row, int column) const;
         float determinant(void) const;
+        Matrix inverse(void) const;
         friend bool operator==(const Matrix& m1, const Matrix& m2);
         friend std::ostream& operator << (std::ostream& output, const Matrix& matrix);
         friend Matrix operator - (const Matrix& m1, const Matrix& m2);
