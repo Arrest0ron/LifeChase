@@ -1,4 +1,5 @@
 #include "vmath.hpp"
+#include <iomanip>
 
 namespace VM
 {
@@ -223,7 +224,7 @@ namespace VM
         {
             for (int j=0; j != m.columns; j++)
             {
-                std::cout << m.matrix[i][j] << "   ";
+                std::cout <<std::setw(6) << std::left << m.matrix[i][j];
             }
             std::cout << "\n";
         }
@@ -353,7 +354,7 @@ namespace VM
     }
     Matrix Matrix::transpose()
     {
-        if (this->columns != this->columns)
+        if (this->columns != this->rows)
         {
             throw std::runtime_error("Matrix must be square to perform transposition\n");
         }
@@ -387,7 +388,56 @@ namespace VM
         }
         return newMatrix;
     }
+    Matrix Matrix::submatrix(int row, int column) const
+    {
+        if ((row <0) || (row>=this->rows) || (column <0) || (column>=this->columns) )
+        {
+            throw std::runtime_error("Submatrix index out of range\n");
+        }
 
+        int row_index, column_index; 
+        Matrix newMatrix(this->rows-1, this->columns-1);
+        for (int i = 0; i!= this->rows; i++)
+        {
+            for (int j = 0; j!=this->columns; j++)
+            {
+                if (i==row){continue;}
+                if (j==column){continue;}
+                // std::cout << "(" << i << ", " << j << ") for ";
+                if (i>row){row_index=i-1;}
+                else {row_index = i;}
+                if (j>column){column_index=j-1;}
+                else {column_index = j;}
+                // std::cout << "(" << row_index << ", " << column_index << ") ";
+                newMatrix.matrix[row_index][column_index]=this->matrix[i][j];
+            }
+            // std::cout << "\n";
+        }
+        return newMatrix;
+    }
+    float Matrix::determinant(void) const
+    {
+        if (this->columns != this->rows)
+        {
+            throw std::runtime_error("Matrix must be square to calculate determinant\n");
+        }
+        // std::cout << *this << "\n\n";
+        
+        if ((this->rows==2))
+        {
+            return matrix[0][0]*matrix[1][1]-matrix[0][1]*matrix[1][0];
+        }
+        float res=0;
+        int coef = 0;
+        for (int j = 0; j!= this->columns; j++)
+        {
+            if (j%2==0){coef = 1;}
+            else{coef = -1;}
+            res+= coef*this->submatrix(0,j).determinant()*matrix[0][j];
+        }
+        
+        return res;
+    }
 
     Vector::Vector()
     {

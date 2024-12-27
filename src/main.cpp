@@ -2,8 +2,7 @@
 #include "vmath.hpp"
 
 int main() {
-    VM::Matrix NewMatrix = VM::Matrix::identity(5) *5;
-    VM::Matrix NewMatrix2 = 8*VM::Matrix::identity(5);
-    std::cout <<  NewMatrix*NewMatrix2;
+    VM::Matrix NewMatrix = VM::Matrix::identity(5)*3;
+    std::cout << (NewMatrix).determinant();
     return 0;
 }
