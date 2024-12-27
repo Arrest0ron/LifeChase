@@ -1,6 +1,6 @@
 #include "vmath.hpp"
 #include <iomanip>
-
+#include <ctime>
 namespace VM
 {
 
@@ -224,7 +224,9 @@ namespace VM
         {
             for (int j=0; j != m.columns; j++)
             {
-                std::cout <<std::setw(12) << std::left << m.matrix[i][j];
+                float el = m.matrix[i][j];
+                if (std::fabs(el) <= __FLT_EPSILON__*100){el = 0;}
+                std::cout <<std::setw(12) << std::left << el;
             }
             std::cout << "\n";
         }
@@ -335,6 +337,39 @@ namespace VM
         Matrix newMatrix(size, size);
         return newMatrix;
     }
+    Matrix Matrix::enumeratrix(int size)
+    {
+        if (size <= 0)
+        {
+            throw std::runtime_error("Matrix size must be at least 1\n");
+        }
+        Matrix newMatrix(size, size);
+        for (int i = 0; i!= size; i++)
+        {
+            for (int j = 0; j!= size; j++)
+            {
+                newMatrix.matrix[i][j] = i*size+j; 
+            }
+        }
+        return newMatrix;
+    }
+    Matrix Matrix::randomatrix(int size)
+    {
+        if (size <= 0)
+        {
+            throw std::runtime_error("Matrix size must be at least 1\n");
+        }
+        Matrix newMatrix(size, size);
+        srand(time(0));
+        for (int i = 0; i!= size; i++)
+        {
+            for (int j = 0; j!= size; j++)
+            {
+                newMatrix.matrix[i][j] = float((rand()%100))/10.0; 
+            }
+        }
+        return newMatrix;
+    }
     Vector Matrix::operator[](int index) const
     {
         // std::cout << this->rows << "\n";
@@ -438,14 +473,18 @@ namespace VM
         
         return res;
     }
-    Matrix Matrix::inverse(void) const
+    Matrix Matrix::inverse(void) const  // breaks on small size
     {
         if (this->columns != this->rows)
         {
             throw std::runtime_error("Matrix must be square to calculate inverse\n");
         }
         // std::cout << (*this).determinant() << "\n\n";
-        
+        float det = this->determinant();
+        if (this->columns != this->rows)
+        {
+            throw std::runtime_error("Matrix is non inversible");
+        }
         
         Matrix NewMatrix(columns, columns);
         int coef;
@@ -458,7 +497,7 @@ namespace VM
                 NewMatrix.matrix[i][j] = float(coef * this->submatrix(i,j).determinant());
             }
         }
-        return NewMatrix*(1/this->determinant());
+        return NewMatrix.transpose()*(1/det);
     }
 
     Vector::Vector()

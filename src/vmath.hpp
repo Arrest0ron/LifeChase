@@ -85,6 +85,8 @@ namespace VM
         Vector operator [] (int index) const;
         static Matrix identity(int size);
         static Matrix zero(int size);
+        static Matrix enumeratrix(int size);
+        static Matrix randomatrix(int size);
         Matrix transpose();
         Matrix submatrix(int row, int column) const;
         float determinant(void) const;

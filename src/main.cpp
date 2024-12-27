@@ -2,7 +2,7 @@
 #include "vmath.hpp"
 
 int main() {
-    VM::Matrix NewMatrix = VM::Matrix::identity(5)*3;
-    std::cout << (NewMatrix).inverse();
+    VM::Matrix NewMatrix = VM::Matrix::randomatrix(4);
+    std::cout << (NewMatrix) << NewMatrix* NewMatrix.inverse();
     return 0;
 }
