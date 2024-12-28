@@ -1,6 +1,6 @@
 #include "vmath.hpp"
-#include <iomanip>
-#include <ctime>
+
+#define OUTPUT_PRECISION 0.0001f
 namespace VM
 {
 
@@ -61,6 +61,9 @@ namespace VM
             throw std::runtime_error("vector2 index out of range");
         }
     }
+    Vector2::Vector2(const sf::Vector2<float>& other):
+        x (other.x),
+        y (other.y) {}
 
     float Vector3::magnitude(){return sqrt(x*x+y*y+z*z);}
     bool Vector3::normalize(void)
@@ -87,6 +90,25 @@ namespace VM
         return V3Normalized;
     }
     Vector3::Vector3(const Vector3& other): x(other.x), y(other.y), z(other.z){}
+    Vector3::Vector3(const sf::Vector3<float>& other) :
+        x (other.x),
+        y (other.y),
+        z (other.z) {}
+    
+    float& Vector3::operator[](int index)
+    {
+        switch (index)
+        {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z; 
+        default:
+            throw std::runtime_error("vector3 index out of range");
+        }
+    }
     float Vector3::operator[](int index) const
     {
         switch (index)
@@ -134,6 +156,23 @@ namespace VM
         this->w*=r_sqrt;
         return true;
     }
+    bool Vector4::WNormalize(void) 
+    {
+        if (!std::isfinite(x) || !std::isfinite(y) ||  !std::isfinite(z)|| !std::isfinite(w))
+        {
+            return false;
+        }
+        if (std::fabs(w) < __FLT_EPSILON__)
+        {
+            return false;
+        }
+
+        this->x/=this->w;
+        this->y/=this->w;
+        this->z/=this->w;
+        this->w/=this->w;
+        return true;
+    }
     Vector4 Vector4::normalized(void) const
     {
         Vector4 V4Normalized(*this);
@@ -142,6 +181,22 @@ namespace VM
     }
     Vector4::Vector4(const Vector4& other): x(other.x), y(other.y), z(other.z), w(other.w) {}
     float Vector4::operator[](int index) const
+    {
+        switch (index)
+        {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;  
+        default:
+            throw std::runtime_error("vector3 index out of range");
+        }
+    }
+    float& Vector4::operator[](int index)
     {
         switch (index)
         {
@@ -217,15 +272,32 @@ namespace VM
             delete [] matrix;
         }
     }    
+    void Matrix::free()
+    {   
+        // std::cout << "~M";
+        if (matrix == nullptr)
+        {
+            std::cerr << "Data lost. Nullptr matrix\n";
+        }
+        else
+        {
+            for (int i = 0; i!= this->rows; i++)
+            {
+                delete [] matrix[i];
+            }
+            delete [] matrix;
+        }
+    }   
     std::ostream& operator << (std::ostream& output, const Matrix& m)
     {
+        std::cout.precision(int(-std::log10(OUTPUT_PRECISION)));
         // std::cout << "out(" << m.rows << " " <<  m.columns << ")\n";
         for (int i=0; i != m.rows; i++)
         {
             for (int j=0; j != m.columns; j++)
             {
                 float el = m.matrix[i][j];
-                if (std::fabs(el) <= __FLT_EPSILON__*100){el = 0;}
+                if (std::fabs(el) <= OUTPUT_PRECISION){el = 0;}
                 std::cout <<std::setw(12) << std::left << el;
             }
             std::cout << "\n";
@@ -360,7 +432,7 @@ namespace VM
             throw std::runtime_error("Matrix size must be at least 1\n");
         }
         Matrix newMatrix(size, size);
-        srand(time(0));
+        
         for (int i = 0; i!= size; i++)
         {
             for (int j = 0; j!= size; j++)
@@ -423,6 +495,111 @@ namespace VM
         }
         return newMatrix;
     }
+    Vector operator*(const Matrix& m,const Vector& v)
+    {
+        if (v.size != m.columns)
+        {
+            throw std::runtime_error("M columns and V count must be equal to perform M * V multiplication\n");
+        }
+        Vector newVector;
+        for (int i = 0; i!= v.size; i++)
+        {
+            newVector.push_back(0);
+            for (int j = 0; j!= m.columns; j++)
+            {
+
+                newVector.values[i]+=m.matrix[i][j]*v.values[j];        
+            }
+        }
+        return newVector;
+    }
+    Vector3 operator*(const Matrix& m,const Vector3& v)
+    {
+        if (3 != m.columns)
+        {
+            throw std::runtime_error("M columns and V count must be equal to perform M * V multiplication\n");
+        }
+        Vector3 newVector;
+        for (int i = 0; i!= 3; i++)
+        {
+            for (int j = 0; j!= m.columns; j++)
+            {
+
+                newVector[i]+=m.matrix[i][j]*v[j];        
+            }
+        }
+        return newVector;
+    }
+    Vector4 operator*(const Matrix& m,const Vector4& v)
+    {
+        if (4 != m.columns)
+        {
+            throw std::runtime_error("M columns and V count must be equal to perform M * V multiplication\n");
+        }
+        Vector4 newVector;
+        for (int i = 0; i!= 4; i++)
+        {
+            for (int j = 0; j!= m.columns; j++)
+            {
+
+                newVector[i]+=m.matrix[i][j]*v[j];        
+            }
+        }
+        return newVector;
+    }
+    Matrix Matrix::view(const Vector3& R,const Vector3& U,const Vector3& F, const Vector3& CT) // NO DOT PRODUCTS!! TODO
+    {
+        Matrix RotationMatrix(4,4);
+        RotationMatrix.matrix[0][0] = R.x;
+        RotationMatrix.matrix[0][1] = R.y;
+        RotationMatrix.matrix[0][2] = R.z;
+        RotationMatrix.matrix[0][3] = -Vector3::dot(R, CT);
+
+        RotationMatrix.matrix[1][0] = U.x;
+        RotationMatrix.matrix[1][1] = U.y;
+        RotationMatrix.matrix[1][2] = U.z;
+        RotationMatrix.matrix[1][3] = -Vector3::dot(U, CT);
+        
+        RotationMatrix.matrix[2][0] = F.x;
+        RotationMatrix.matrix[2][1] = F.y;
+        RotationMatrix.matrix[2][2] = F.z;
+        RotationMatrix.matrix[2][3] = -Vector3::dot(F, CT);
+
+        RotationMatrix.matrix[3][3] = 1;
+
+        RotationMatrix.matrix[3][0] = 0;
+        RotationMatrix.matrix[3][1] = 0;
+        RotationMatrix.matrix[3][2] = 0;
+        return RotationMatrix;
+    }
+    Matrix Matrix::perspectiveProjection_90_1_77(void) // NO DOT PRODUCTS!! TODO
+    {
+        Matrix RotationMatrix(4,4);
+        RotationMatrix.matrix[0][0] = 0.56497175;
+
+        RotationMatrix.matrix[1][1] = 1;
+        
+        RotationMatrix.matrix[2][2] = -1.00020002;
+        RotationMatrix.matrix[2][3] = -0.20002;   //DOT here
+
+
+        RotationMatrix.matrix[3][2] = -1;
+        return RotationMatrix;
+    }
+    Matrix Matrix::perspectiveProjection_90_1(void) // NO DOT PRODUCTS!! TODO
+    {
+        Matrix RotationMatrix(4,4);
+        RotationMatrix.matrix[0][0] = 2.414;
+
+        RotationMatrix.matrix[1][1] = 2.414;
+        
+        RotationMatrix.matrix[2][2] = -1.00020002;
+        RotationMatrix.matrix[2][3] = -0.20002;   //DOT here
+
+
+        RotationMatrix.matrix[3][2] = -1;
+        return RotationMatrix;
+    }
     Matrix Matrix::submatrix(int row, int column) const
     {
         if ((row <0) || (row>=this->rows) || (column <0) || (column>=this->columns) )
@@ -472,7 +649,93 @@ namespace VM
         }
         
         return res;
+        }
+    
+    Matrix Matrix::rotationX(float radians) 
+    {
+        Matrix NewMatrix(4,4);
+        float cos_v = cos(radians);
+        float sin_v = sin(radians);
+        NewMatrix.matrix[0][0] = 1;
+        NewMatrix.matrix[3][3] = 1;
+        NewMatrix.matrix[1][1] = cos_v;
+        NewMatrix.matrix[2][2] = cos_v;
+        NewMatrix.matrix[2][1] = sin_v;
+        NewMatrix.matrix[1][2] = -sin_v;
+        return NewMatrix;
     }
+    Matrix& Matrix::operator = (const Matrix& m)
+    {
+        if ((this->rows != m.rows) || (this->columns != m.columns))
+        {
+            std::cout << "Warning - assigning non equal sized matrices";
+        }
+        this->free();
+        this->matrix = new float*[m.rows];
+        this->rows = m.rows;
+        this->columns = m.columns;
+        for (int i = 0; i!= m.rows; i++)
+        {
+            this->matrix[i] = new float [m.columns];
+            for (int j = 0; j!= m.columns; j++)
+            {
+                this->matrix[i][j] = m.matrix[i][j];
+            }
+        }
+        return *this;
+    }
+    
+    Matrix Matrix::translation(float tx, float ty, float tz) 
+    {
+        Matrix NewMatrix(4,4);
+        NewMatrix.matrix[0][0] = 1;
+        NewMatrix.matrix[1][1] = 1;
+        NewMatrix.matrix[2][2] = 1;
+        NewMatrix.matrix[3][3] = 1;
+
+        NewMatrix.matrix[0][3] = tx;
+        NewMatrix.matrix[1][3] = ty;
+        NewMatrix.matrix[2][3] = tz;
+        return NewMatrix;
+    }
+    Matrix Matrix::rotationY(float radians)
+    {
+        Matrix NewMatrix(4,4);
+        float cos_v = cos(radians);
+        float sin_v = sin(radians);
+        NewMatrix.matrix[1][1] = 1;
+        NewMatrix.matrix[3][3] = 1;
+        NewMatrix.matrix[0][0] = cos_v;
+        NewMatrix.matrix[2][2] = cos_v;
+        NewMatrix.matrix[0][2] = sin_v;
+        NewMatrix.matrix[2][0] = -sin_v;
+        return NewMatrix;
+    }
+    Matrix Matrix::rotationZ(float radians)
+    {
+        Matrix NewMatrix(4,4);
+        float cos_v = cos(radians);
+        float sin_v = sin(radians);
+        NewMatrix.matrix[2][2] = 1;
+        NewMatrix.matrix[3][3] = 1;
+        NewMatrix.matrix[0][0] = cos_v;
+        NewMatrix.matrix[1][1] = cos_v;
+        NewMatrix.matrix[1][0] = sin_v;
+        NewMatrix.matrix[0][1] = -sin_v;
+        return NewMatrix;
+    }
+    Matrix Matrix::scale(float SX, float SY, float SZ) 
+    {
+        Matrix NewMatrix(4,4);
+        NewMatrix.matrix[3][3] = 1;
+        NewMatrix.matrix[2][2] = SZ;
+        NewMatrix.matrix[1][1] = SY;
+        NewMatrix.matrix[0][0] = SX;
+        return NewMatrix;
+
+
+    }
+    
     Matrix Matrix::inverse(void) const  // breaks on small size
     {
         if (this->columns != this->rows)
@@ -547,7 +810,6 @@ namespace VM
         delete [] this->values;
         this->values = newValues;
         this->capacity *=2;
-        
     }
     Vector::~Vector()
     {

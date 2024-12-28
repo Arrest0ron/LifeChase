@@ -4,7 +4,11 @@
 
 #include <math.h>
 #include <iostream>
+#include <SFML/Graphics.hpp>
 #include <stdexcept>
+#include <iomanip>
+#include <ctime>
+
 #define __FLT_EPSILON__ 1.19209289550781250000000000000000000e-7F
 
 
@@ -17,7 +21,10 @@ namespace VM
         float x, y;
         Vector2(float Nx = 0, float Ny = 0) : x(Nx), y(Ny) {}
         Vector2(const Vector2& other);
+        Vector2(const sf::Vector2<float>& other);
+
         bool normalize(void);
+        
         
         Vector2 normalized(void) const;
         float magnitude();
@@ -33,6 +40,7 @@ namespace VM
         float x, y, z;
         Vector3(float Nx = 0, float Ny = 0, float Nz = 0) : x(Nx), y(Ny), z(Nz) {}
         Vector3(const Vector3& other);
+        Vector3(const sf::Vector3<float>& other);
         bool normalize(void);
         Vector3 normalized(void) const;
         float magnitude();
@@ -41,6 +49,7 @@ namespace VM
         friend std::ostream& operator << (std::ostream& output, const Vector3& vector);
         friend Vector3 operator + (const Vector3& vector1, const Vector3& vector2);
         friend Vector3 operator - (const Vector3& vector1, const Vector3& vector2);
+        float& operator[](int index);
         float operator[](int index) const;
     };
     
@@ -50,12 +59,14 @@ namespace VM
         Vector4(float Nx = 0, float Ny = 0, float Nz = 0, float Nw = 0) : x(Nx), y(Ny), z(Nz), w(Nw) {}
         Vector4(const Vector4& other);
         bool normalize(void);
+        bool WNormalize(void);
         Vector4 normalized(void) const;
         float magnitude();
         static float dot(const Vector4& v1, const Vector4& v2);
         friend std::ostream& operator << (std::ostream& output, const Vector4& vector);
         friend Vector4 operator + (const Vector4& v1, const Vector4& v2);
         friend Vector4 operator - (const Vector4& v1, const Vector4& v2);
+        float& operator[](int index);
         float operator[](int index) const;
     };
 
@@ -87,18 +98,30 @@ namespace VM
         static Matrix zero(int size);
         static Matrix enumeratrix(int size);
         static Matrix randomatrix(int size);
+        void free();
         Matrix transpose();
         Matrix submatrix(int row, int column) const;
         float determinant(void) const;
         Matrix inverse(void) const;
+        static Matrix rotationX(float radians);
+        static Matrix rotationY(float radians);
+        static Matrix rotationZ(float radians);
+        static Matrix scale(float SX, float SY, float SZ);
+        static Matrix translation(float tx, float ty, float tz); 
+        static Matrix perspectiveProjection_90_1_77(void);
+        static Matrix perspectiveProjection_90_1(void);
+        static Matrix view(const Vector3& R,const Vector3& U,const Vector3& F, const Vector3& CT);
         friend bool operator==(const Matrix& m1, const Matrix& m2);
         friend std::ostream& operator << (std::ostream& output, const Matrix& matrix);
         friend Matrix operator - (const Matrix& m1, const Matrix& m2);
         friend Matrix operator + (const Matrix& m1, const Matrix& m2);
+        Matrix& operator = (const Matrix& m);
+        friend Vector3 operator*(const Matrix& m,const Vector3& v);
+        friend Vector4 operator*(const Matrix& m,const Vector4& v);
+        friend Vector operator*(const Matrix& m,const Vector& v);
         friend Matrix operator * (float a, const Matrix& m);
         friend Matrix operator * (const Matrix& m, float a);
         friend Matrix operator * (const Matrix& m1, const Matrix& m2);
-
     };
     
 }
