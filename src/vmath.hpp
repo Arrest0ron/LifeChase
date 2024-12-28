@@ -71,7 +71,7 @@ namespace VM
         float operator[](int index) const;
     };
 
-    struct Vector
+    struct Vector 
     {
         float* values;
         int size;
