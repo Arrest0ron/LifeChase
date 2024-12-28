@@ -59,6 +59,7 @@ namespace VM
         Vector4(float Nx = 0, float Ny = 0, float Nz = 0, float Nw = 0) : x(Nx), y(Ny), z(Nz), w(Nw) {}
         Vector4(const Vector4& other);
         bool normalize(void);
+        bool normalize(float);
         bool WNormalize(void);
         Vector4 normalized(void) const;
         float magnitude();

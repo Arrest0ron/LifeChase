@@ -156,6 +156,25 @@ namespace VM
         this->w*=r_sqrt;
         return true;
     }
+    bool Vector4::normalize(float sqrt_lim) 
+    {
+        if (!std::isfinite(x) || !std::isfinite(y) ||  !std::isfinite(z)|| !std::isfinite(w))
+        {
+            return false;
+        }
+        float sq = x*x + y*y +z*z + w*w;
+        if (std::fabs(sq) < __FLT_EPSILON__)
+        {
+            return false;
+        }
+        float r_sqrt = fastInverseSqrt(sq);
+
+        this->x=x*sqrt_lim*r_sqrt;
+        this->y=y*sqrt_lim*r_sqrt;
+        this->z=z*sqrt_lim*r_sqrt;
+        this->w=w*sqrt_lim*r_sqrt;
+        return true;
+    }
     bool Vector4::WNormalize(void) 
     {
         if (!std::isfinite(x) || !std::isfinite(y) ||  !std::isfinite(z)|| !std::isfinite(w))
