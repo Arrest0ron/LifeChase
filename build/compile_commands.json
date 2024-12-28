@@ -10,5 +10,11 @@
   "command": "/usr/bin/g++ -isystem /home/user/Documents/SFML-2.6.2/include -g -o CMakeFiles/SFMLProject.dir/src/vmath.cpp.o -c /home/user/LifeChase/src/vmath.cpp",
   "file": "/home/user/LifeChase/src/vmath.cpp",
   "output": "CMakeFiles/SFMLProject.dir/src/vmath.cpp.o"
+},
+{
+  "directory": "/home/user/LifeChase/build",
+  "command": "/usr/bin/g++ -isystem /home/user/Documents/SFML-2.6.2/include -g -o CMakeFiles/SFMLProject.dir/src/visual.cpp.o -c /home/user/LifeChase/src/visual.cpp",
+  "file": "/home/user/LifeChase/src/visual.cpp",
+  "output": "CMakeFiles/SFMLProject.dir/src/visual.cpp.o"
 }
 ]
