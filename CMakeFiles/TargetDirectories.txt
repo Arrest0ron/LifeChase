@@ -1,3 +1,0 @@
-/home/user/LifeChase/CMakeFiles/SFMLProject.dir
-/home/user/LifeChase/CMakeFiles/edit_cache.dir
-/home/user/LifeChase/CMakeFiles/rebuild_cache.dir

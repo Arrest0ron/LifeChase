@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/SFMLProject.dir/src/main.cpp.o CMakeFiles/SFMLProject.dir/src/vmath.cpp.o -o SFMLProject  -Wl,-rpath,/home/user/Documents/SFML-2.6.2/lib /home/user/Documents/SFML-2.6.2/lib/libsfml-graphics-d.so.2.6.2 /home/user/Documents/SFML-2.6.2/lib/libsfml-window-d.so.2.6.2 /home/user/Documents/SFML-2.6.2/lib/libsfml-system-d.so.2.6.2 

@@ -1,9 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include "vmath.hpp"
-#include <math.h>
 #include <stdio.h>
-#include <GL/gl.h>
 
 int main() {
     // std::cout << alignof(VM::Matrix);
@@ -70,7 +68,7 @@ int main() {
 
     auto lastMousePos =  sf::Mouse::getPosition(window), newMousePos = lastMousePos, mouseDelta = lastMousePos;
     
-    window.setVerticalSyncEnabled(true);                                   // VSync!
+    // window.setVerticalSyncEnabled(true);                                   // VSync!
     int frames =0;
     int START = 0;
     sf::Mouse::setPosition(sf::Vector2i(1920/2/2, 1080/2), window);
@@ -82,7 +80,7 @@ int main() {
     VM::Matrix MovementTranslation = VM::Matrix::translation(0,0,0);
     sf::Clock clock;
             sf::Font TimesNewRoman;
-        TimesNewRoman.loadFromFile("../fonts/Times New Roman.ttf");
+        TimesNewRoman.loadFromFile("TimesNewRoman.ttf");
     int FPS_VAL = 0; 
         sf::Text FPS;
         FPS.setFont(TimesNewRoman);
