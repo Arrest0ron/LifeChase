@@ -68,7 +68,7 @@ int main() {
 
     auto lastMousePos =  sf::Mouse::getPosition(window), newMousePos = lastMousePos, mouseDelta = lastMousePos;
     
-    // window.setVerticalSyncEnabled(true);                                   // VSync!
+    window.setVerticalSyncEnabled(true);                                   // VSync!
     int frames =0;
     int START = 0;
     sf::Mouse::setPosition(sf::Vector2i(1920/2/2, 1080/2), window);

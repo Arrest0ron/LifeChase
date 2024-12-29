@@ -8,13 +8,21 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/Arrest0ron/MVM.git
     GIT_TAG master
 )
-set(CMAKE_PREFIX_PATH "include/")
+
+FetchContent_Declare(
+  SFML
+  GIT_REPOSITORY https://github.com/SFML/SFML.git
+  GIT_TAG        2.6.2  # or a specific tag
+)
+
+FetchContent_MakeAvailable(SFML)
+# set(CMAKE_PREFIX_PATH "include/")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fonts/TimesNewRoman.ttf
         ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 
-find_package(SFML 2.5 REQUIRED graphics window system)
+# find_package(SFML REQUIRED graphics window system)
 
 # Make the dependency available for use
 FetchContent_MakeAvailable(MVM)
